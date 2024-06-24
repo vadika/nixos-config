@@ -30,7 +30,7 @@
     # If using NetworkManager:
     networkmanager.enable = true;
     networkmanager.dns = "none";
-    hostName = "woooster"; # Define your hostname.
+    hostName = "AuntAgatha"; # Define your hostname.
   };
 
   virtualisation.libvirtd.enable = true;
@@ -157,6 +157,8 @@
       yubioath-flutter
       terminator
       devenv
+      pinta
+      zoom-us
     ];
   };
 
@@ -166,9 +168,9 @@
     eog         # image viewer
     epiphany    # web browser
     simple-scan # document scanner
-    totem       # video player
+    # totem       # video player
     yelp        # help viewer
-    evince      # document viewer
+    # evince      # document viewer
     file-roller # archive manager
     geary       # email client
     seahorse    # password manager
@@ -216,6 +218,10 @@
     yubikey-personalization
     screen
     microcom
+    file
+    mc
+    bintools
+    vboot_reference
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -252,4 +258,14 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.11"; # Did you read the comment?
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.extra-platforms = config.boot.binfmt.emulatedSystems;
+
+  nix.settings.trusted-users = [ "root" "vadikas" ];
+  nix.settings.substituters = [
+  "https://devenv.cachix.org"
+  ];
+  nix.settings.trusted-public-keys = [
+  "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw="
+  ]; 
+
 }
