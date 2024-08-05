@@ -89,7 +89,7 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
-  sound.enable = true;
+  # sound.enable = true;
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -113,7 +113,7 @@
         tls_auth_name = "cloudflare-dns.com";
         tls_pubkey_pinset = [{
           digest = "sha256";
-          value = "HdDBgtnj07/NrKNmLCbg5rxK78ZehdHZ/Uoutx4iHzY=";
+          value = "4pqQ+yl3lAtRvKdoCCUR8iDmA53I+cJ7orgBLiF08kQ=";
         }];
       }
         {
@@ -121,7 +121,7 @@
           tls_auth_name = "cloudflare-dns.com";
           tls_pubkey_pinset = [{
             digest = "sha256";
-            value = "HdDBgtnj07/NrKNmLCbg5rxK78ZehdHZ/Uoutx4iHzY=";
+            value = "4pqQ+yl3lAtRvKdoCCUR8iDmA53I+cJ7orgBLiF08kQ=";
           }];
         }];
     };
@@ -144,12 +144,15 @@
       gnomeExtensions.dash-to-dock
       gnomeExtensions.just-perfection
       gnomeExtensions.window-title-is-back
+      gnomeExtensions.easyeffects-preset-selector
+      gnome.networkmanager-openvpn
       firefox
       telegram-desktop
       zapzap
       slack
       git
       sublime4
+      sublime-merge
       nixpkgs-fmt
       mc
       virtualenv
@@ -157,8 +160,15 @@
       yubioath-flutter
       terminator
       devenv
+      pinta
     ];
   };
+
+
+ environment.variables = {
+  EDITOR = "vi";
+  VISUAL = "vi";
+ };
 
  environment.gnome.excludePackages = with pkgs.gnome; [
     baobab      # disk usage analyzer
@@ -186,6 +196,7 @@
     gnome-weather
     gnome-disk-utility
     pkgs.gnome-connections
+    
   ];
 
 
@@ -216,6 +227,8 @@
     yubikey-personalization
     screen
     microcom
+    bashdb
+    easyeffects
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -252,4 +265,16 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.11"; # Did you read the comment?
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  nix.settings.extra-platforms = config.boot.binfmt.emulatedSystems;
+
+  nix.settings.trusted-users = [ "root" "vadikas" ];
+  nix.settings.substituters = [
+  "https://devenv.cachix.org"
+  ];
+  nix.settings.trusted-public-keys = [
+  "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw="
+  ];
+
+
 }
