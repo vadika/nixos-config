@@ -4,15 +4,35 @@
 
 { config, pkgs, lib, ... }:
 
+let
+  myOverlay = import /home/vadikas/N/overlay.nix;
+
+in
 {
   imports =
     [
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
+#      ./i915-iov.nix
     ];
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelParams = [ "mitigations=off" ];
+#    boot.kernelPackages = pkgs.linuxPackagesFor (pkgs.linux_latest.override {
+#    structuredExtraConfig = with pkgs.lib.kernel; {
+#      # Your kernel config options go here
+#      DRM_I915_PXP = yes;
+#      INTEL_MEI_PXP = freeform "m";
+#      # Add more options as needed
+#    };
+#   });
+
+  boot.kernelParams = [ "mitigations=off" "intel_iommu=on" "intel_iommu=on" "i915.enable_guc=3" "i915.max_vfs=7" ];
+
+
+  boot.initrd.kernelModules = [
+        "vfio_pci"
+        "vfio"
+        "vfio_iommu_type1"
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -21,6 +41,7 @@
   boot.binfmt.emulatedSystems = [
     "aarch64-linux"
   ];
+
 
   # Enable networking
   networking = {
@@ -70,6 +91,14 @@
    '';
 
 
+  hardware.opengl = {
+    enable = true;
+    extraPackages = with pkgs; [
+      vpl-gpu-rt          # for newer GPUs on NixOS >24.05 or unstable
+    ];
+  };
+
+
   services.xserver = {
     # Required for DE to launch.
     enable = true;
@@ -103,6 +132,14 @@
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
     #media-session.enable = true;
+    wireplumber.enable = true;
+    wireplumber.extraConfig = {
+       "main" = {
+          "monitor" = {
+             "libcamera" = "disabled";
+          };
+       };
+     }; 
   };
 
   services.stubby = {
@@ -144,7 +181,6 @@
       gnomeExtensions.dash-to-dock
       gnomeExtensions.just-perfection
       gnomeExtensions.window-title-is-back
-      gnomeExtensions.easyeffects-preset-selector
       gnome.networkmanager-openvpn
       firefox
       telegram-desktop
@@ -161,6 +197,8 @@
       terminator
       devenv
       pinta
+      onlyoffice-bin_latest
+      vistafonts
     ];
   };
 
@@ -178,7 +216,6 @@
     simple-scan # document scanner
     totem       # video player
     yelp        # help viewer
-    evince      # document viewer
     file-roller # archive manager
     geary       # email client
     seahorse    # password manager
@@ -203,6 +240,7 @@
 
   # Install firefox.
   programs.firefox.enable = true;
+ 
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -211,6 +249,10 @@
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.1.1w"
   ];
+
+
+  nixpkgs.config.allowBroken = true;
+
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -228,9 +270,14 @@
     screen
     microcom
     bashdb
-    easyeffects
+    psmisc
+    pipx
+    qemu_full 
   ];
 
+
+   nixpkgs.overlays = [ myOverlay ];
+ 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
