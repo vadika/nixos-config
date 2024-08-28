@@ -17,15 +17,8 @@ in
     ];
 
 #    boot.kernelPackages = pkgs.linuxPackagesFor (pkgs.linux_latest.override {
-#    structuredExtraConfig = with pkgs.lib.kernel; {
-#      # Your kernel config options go here
-#      DRM_I915_PXP = yes;
-#      INTEL_MEI_PXP = freeform "m";
-#      # Add more options as needed
-#    };
-#   });
 
-  boot.kernelParams = [ "mitigations=off" "intel_iommu=on" "intel_iommu=on" "i915.enable_guc=3" "i915.max_vfs=7" ];
+  boot.kernelParams = [ "mitigations=off" "intel_iommu=on"  ];
 
 
   boot.initrd.kernelModules = [
@@ -91,7 +84,7 @@ in
    '';
 
 
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
       vpl-gpu-rt          # for newer GPUs on NixOS >24.05 or unstable
@@ -110,6 +103,7 @@ in
     };
     # Enable Desktop Environment.
     desktopManager.gnome.enable = true;
+    #desktopManager.cosmic.enable = true;
     excludePackages = with pkgs; [ xterm ];
   };
 
@@ -175,7 +169,7 @@ in
     description = "vadikas";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      gnome.gnome-tweaks
+      gnome-tweaks
       gnomeExtensions.appindicator
       gnomeExtensions.caffeine
       gnomeExtensions.dash-to-dock
@@ -208,7 +202,7 @@ in
   VISUAL = "vi";
  };
 
- environment.gnome.excludePackages = with pkgs.gnome; [
+ environment.gnome.excludePackages = with pkgs; [
     baobab      # disk usage analyzer
     cheese      # photo booth
     eog         # image viewer
@@ -222,17 +216,16 @@ in
 
     gnome-calculator
     gnome-calendar
-    gnome-characters
-    gnome-clocks
-    gnome-contacts
+    gnome.gnome-characters
+    gnome.gnome-clocks
+    gnome.gnome-contacts
     gnome-font-viewer
-    gnome-logs
-    gnome-maps
-    gnome-music
+    gnome.gnome-logs
+    gnome.gnome-maps
+    gnome.gnome-music
     gnome-screenshot
-    gnome-weather
-    gnome-disk-utility
-    pkgs.gnome-connections
+    gnome.gnome-weather
+    gnome-connections
     
   ];
 
